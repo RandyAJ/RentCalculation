@@ -15,6 +15,8 @@ public class RecordRepository {
     public Record findById(Long id){
         try (Session session = sessionFactory.openSession()) {
             return session.get(Record.class, id);
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка получения записи по айди" + e);
         }
     }
 
@@ -23,7 +25,11 @@ public class RecordRepository {
         try (Session session = sessionFactory.openSession()) {
             Query<Record> query = session.createQuery("FROM Record ORDER BY dateRecord DESC", Record.class);
             query.setMaxResults(1); // Получаем только одну запись, самую свежую
+
             return query.uniqueResult();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка получения последней свежей записи" + e);
         }
     }
 
@@ -32,6 +38,20 @@ public class RecordRepository {
             session.beginTransaction();
             session.persist(record);
             session.getTransaction().commit();
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка сохранения записи" + e);
+        }
+    }
+
+    public Boolean delete(Long id){
+        try(Session session = sessionFactory.openSession()){
+            Record record = this.findById(id);
+            session.delete(record);
+
+            return true;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка удаления записи" + e);
         }
     }
 }
