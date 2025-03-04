@@ -1,0 +1,19 @@
+<configuration>
+    <!-- Консольный аппендер -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Логирование Hibernate -->
+    <logger name="org.hibernate.SQL" level="INFO"/> <!-- Показывать только важные SQL-запросы -->
+    <logger name="org.hibernate.orm.jdbc.bind" level="OFF"/> <!-- Не логировать параметры SQL -->
+    <logger name="org.hibernate.engine.transaction.internal.TransactionImpl" level="ERROR"/> <!-- Ошибки транзакций -->
+    <logger name="org.hibernate.stat" level="OFF"/> <!-- Выключить статистику Hibernate -->
+
+    <!-- Общие настройки логирования -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
