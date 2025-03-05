@@ -1,5 +1,6 @@
 package org.rent;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -11,7 +12,13 @@ public class Main {
 
     public static void main(String[] args) {
 
-        logger.info("Приложение запущено");
+        logger.info(" >>> Приложение запущено");
+
+        System.setProperty("env.DB_URL", System.getenv("DB_URL"));  // костыли. файлик конфигурации в том виде в котором есть (не application.properties) во время сборки не хочет видеть переменные окружения
+        System.setProperty("env.DB_USERNAME", System.getenv("DB_USERNAME"));
+        System.setProperty("env.DB_PASSWORD", System.getenv("DB_PASSWORD"));
+
+        dbConnection();
 
         try(SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory()) {
             // Создаем репозиторий, сервисы и вручную инъектируем сервисы через конструкторы.
@@ -34,6 +41,19 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Ошибка при создании записи: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    static void dbConnection() {
+        try {
+            Configuration configuration = new Configuration().configure(); // Загружаем hibernate.cfg.xml
+            SessionFactory sessionFactory = configuration.buildSessionFactory();
+            Session session = sessionFactory.openSession();
+            logger.info(" ✅ Успешное подключение к БД через Hibernate!");
+            session.close();
+            sessionFactory.close();
+        } catch (Exception e) {
+            logger.error(" ❌ Ошибка подключения к БД: " + e.getMessage());
         }
     }
 }
